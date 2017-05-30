@@ -40,7 +40,7 @@ function logexit {
 
 function set_wp {
   log "setting wallpaper in osascript"
-  	osascript -e 'tell application "Finder" to set desktop picture to POSIX file "'"$(pwd -P)/$1"'"'
+  	osascript -e 'tell application "System Events" to set picture of every desktop to ("'"$(pwd -P)/$1"'" as POSIX file as alias)'
   	#osascript -e 'display notification "You have a new wallpaper :)" with title "wallpaperd"'
 }
 
