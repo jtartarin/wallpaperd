@@ -57,7 +57,7 @@ then
   mkdir -p dl wp
   
   LATEST=$(date +%s).jpg
-  LATEST_TRANSFORMED=$(date +%s).transformed.jpg
+  LATEST_TRANSFORMED=$(date +%s).transformed.png
   
   log "fetching $UNSPLASH_URL"
   curl -sL --url "$UNSPLASH_URL" -o dl/$LATEST
@@ -72,7 +72,7 @@ then
     	then
       	log "transform.bash dl/$LATEST wp/$LATEST_TRANSFORMED"
       bash transform.bash dl/$LATEST wp/$LATEST_TRANSFORMED || logexit "transform failed, returned $?"
-      	ln -fs wp/$LATEST_TRANSFORMED latest.transformed.jpg      
+      	ln -fs wp/$LATEST_TRANSFORMED latest.transformed.png      
       set_wp wp/$LATEST_TRANSFORMED
     else
       log "no transform"
