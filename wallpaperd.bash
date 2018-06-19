@@ -16,8 +16,21 @@ DO_TRANSFORM=false
 REFRESH_TIME=120
 
 # set UNSPLASH_URL to the correct size and tags that you wish
-UNSPLASH_URL="https://source.unsplash.com/featured/2560x1600"
-
+HOUR=$(date +%H)
+case "$HOUR" in
+  21|22|23|00|01|02|03|04|05)
+    UNSPLASH_URL="https://source.unsplash.com/featured/2560x1600?california+night"
+    ;;
+  06|07|08|09)
+    UNSPLASH_URL="https://source.unsplash.com/featured/2560x1600?california+sunrise"
+    ;;
+  18|19|20)
+    UNSPLASH_URL="https://source.unsplash.com/featured/2560x1600?california+sunset"
+    ;;
+  *)
+    UNSPLASH_URL="https://source.unsplash.com/featured/2560x1600?california"
+    ;;
+esac
 
 # Working directory
 WD="./Library/Application Support/io.qsd.wallpaperd"
