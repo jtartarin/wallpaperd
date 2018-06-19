@@ -69,12 +69,17 @@ if test $(find "$CHECKFILE" -mmin +$REFRESH_TIME)
 then
   mkdir -p dl wp
   
-  LATEST=$(date +%s).jpg
-  LATEST_TRANSFORMED=$(date +%s).transformed.png
+  TMP=$(date +%s).jpg
   
   log "fetching $UNSPLASH_URL"
-  curl -sL --url "$UNSPLASH_URL" -o dl/$LATEST
+  curl -sL --url "$UNSPLASH_URL" -o dl/$TMP
 
+  SHASUM=$(shasum dl/$TMP | awk -F' ' '{print $1}')
+  
+  LATEST=$SHASUM.orig.jpg
+  LATEST_TRANSFORMED=$SHASUM.transformed.png
+  mv -n dl/$TMP dl/$LATEST
+  
   # Test is made on actual file and not on return code (sometimes errors return HTML stuff and don't fail the curl)  
   if [ "$(file -bI dl/$LATEST)" = "image/jpeg; charset=binary" ]
   then
