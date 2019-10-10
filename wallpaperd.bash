@@ -72,7 +72,7 @@ then
   TMP=$(date +%s).jpg
   
   log "fetching $UNSPLASH_URL"
-  curl -sL --url "$UNSPLASH_URL" -o dl/$TMP
+  /usr/local/bin/wget --tries 1 -O dl/$TMP --timeout 60 --quiet -- "$UNSPLASH_URL" || logexit "wget failed with return code $?"
 
   SHASUM=$(shasum dl/$TMP | awk -F' ' '{print $1}')
   
