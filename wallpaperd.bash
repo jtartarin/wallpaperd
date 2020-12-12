@@ -16,6 +16,14 @@ DO_TRANSFORM=false
 REFRESH_TIME=120
 
 # set UNSPLASH_URL to the correct size and tags that you wish
+# See https://source.unsplash.com/
+# - https://source.unsplash.com/collection/{COLLECTION ID}/2560x1600
+#   - 1356987 landscapes
+#   - 139338 peace
+#   - 317099 curated by unsplash
+#   - 1155333 nature
+# - https://source.unsplash.com/featured/2560x1600?{KEYWORD},{KEYWORD}
+
 HOUR=$(date +%H)
 case "$HOUR" in
   21|22|23|00|01|02|03|04|05)
@@ -53,8 +61,7 @@ function logexit {
 
 function set_wp {
   log "setting wallpaper in osascript"
-  	osascript -e 'tell application "System Events" to set picture of every desktop to POSIX file "'"$(pwd -P)/$1"'"'  
-  	#osascript -e 'display notification "You have a new wallpaper :)" with title "wallpaperd"'
+  osascript -e 'tell application "System Events" to set picture of every desktop to POSIX file "'"$(pwd -P)/$1"'"'
 }
 
 # First run or force refresh
@@ -68,29 +75,29 @@ fi
 if test $(find "$CHECKFILE" -mmin +$REFRESH_TIME)
 then
   mkdir -p dl wp
-  
+
   TMP=$(date +%s).jpg
-  
+
   log "fetching $UNSPLASH_URL"
   /usr/local/bin/wget --tries 1 -O dl/$TMP --timeout 60 --quiet -- "$UNSPLASH_URL" || logexit "wget failed with return code $?"
 
   SHASUM=$(shasum dl/$TMP | awk -F' ' '{print $1}')
-  
+
   LATEST=$SHASUM.orig.jpg
   LATEST_TRANSFORMED=$SHASUM.transformed.png
   mv -n dl/$TMP dl/$LATEST
-  
-  # Test is made on actual file and not on return code (sometimes errors return HTML stuff and don't fail the curl)  
+
+  # Test is made on actual file and not on return code (sometimes errors return HTML stuff and don't fail the curl)
   if [ "$(file -bI dl/$LATEST)" = "image/jpeg; charset=binary" ]
   then
-    	log "fetched wallpaper $LATEST"
-    	ln -fs dl/$LATEST latest.jpg
-    	
-    	if [ "$DO_TRANSFORM" = true ]
-    	then
-      	log "transform.bash dl/$LATEST wp/$LATEST_TRANSFORMED"
+    log "fetched wallpaper $LATEST"
+    ln -fs dl/$LATEST latest.jpg
+
+    if [ "$DO_TRANSFORM" = true ]
+    then
+      log "transform.bash dl/$LATEST wp/$LATEST_TRANSFORMED"
       bash transform.bash dl/$LATEST wp/$LATEST_TRANSFORMED || logexit "transform failed, returned $?"
-      	ln -fs wp/$LATEST_TRANSFORMED latest.transformed.png      
+      ln -fs wp/$LATEST_TRANSFORMED latest.transformed.png
       set_wp wp/$LATEST_TRANSFORMED
     else
       log "no transform"
@@ -99,7 +106,7 @@ then
 
     touch "$CHECKFILE"
     log "all done"
-    	exit 0
+    exit 0
   fi
   
   log "didn't work properly :("
@@ -107,7 +114,5 @@ then
 
 else
   # Wallpaper is not old enough
-  #log "too soon to change wallpaper"
   exit 0
 fi
-
