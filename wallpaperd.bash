@@ -99,18 +99,21 @@ then
       bash transform.bash dl/$LATEST wp/$LATEST_TRANSFORMED || logexit "transform failed, returned $?"
       ln -fs wp/$LATEST_TRANSFORMED latest.transformed.png
       set_wp wp/$LATEST_TRANSFORMED
+      find wp -type f -name "*.png" -ctime +1d -execdir rm {} \;
     else
       log "no transform"
       set_wp dl/$LATEST
     fi
 
+    find dl -type f -name "*.orig.jpg" -and \( -size 0 -or -ctime +1d \) -execdir rm {} \;
     touch "$CHECKFILE"
     log "all done"
     exit 0
+  else
+    log "didn't work properly :("
+    rm -f -- dl/$TMP dl/$LATEST
+    exit 1
   fi
-  
-  log "didn't work properly :("
-  exit 1
 
 else
   # Wallpaper is not old enough
